@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/TemurMannonov/medium_post_service/genproto/user_service"
+	pb "github.com/TemurMannonov/medium_post_service/genproto/post_service"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
@@ -34,7 +34,8 @@ func main() {
 
 	strg := storage.NewStoragePg(psqlConn)
 
-	userService := service.NewUserService(strg)
+	postService := service.NewPostService(strg)
+	categoryService := service.NewCategoryService(strg)
 
 	lis, err := net.Listen("tcp", cfg.GrpcPort)
 	if err != nil {
@@ -44,11 +45,11 @@ func main() {
 	s := grpc.NewServer()
 	reflection.Register(s)
 
-	pb.RegisterUserServiceServer(s, userService)
+	pb.RegisterPostServiceServer(s, postService)
+	pb.RegisterCategoryServiceServer(s, categoryService)
 
 	log.Println("Grpc server started in port ", cfg.GrpcPort)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Error while listening: %v", err)
 	}
-
 }
