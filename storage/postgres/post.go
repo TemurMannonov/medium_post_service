@@ -49,6 +49,43 @@ func (pr *postRepo) Create(post *repo.Post) (*repo.Post, error) {
 	return post, nil
 }
 
+func (pr *postRepo) Update(post *repo.Post) (*repo.Post, error) {
+	query := `
+		UPDATE posts SET
+			title=$1,
+			description=$2,
+			image_url=$3,
+			category_id=$4,
+			updated_at=CURRENT_TIMESTAMP
+		WHERE id=$5 AND user_id=$6
+		RETURNING 
+			created_at,
+			updated_at,
+			views_count
+	`
+
+	row := pr.db.QueryRow(
+		query,
+		post.Title,
+		post.Description,
+		post.ImageUrl,
+		post.CategoryID,
+		post.ID,
+		post.UserID,
+	)
+
+	err := row.Scan(
+		&post.CreatedAt,
+		&post.UpdatedAt,
+		&post.ViewsCount,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return post, nil
+}
+
 func (pr *postRepo) Get(id int64) (*repo.Post, error) {
 	var result repo.Post
 

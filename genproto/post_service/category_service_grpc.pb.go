@@ -19,7 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CategoryServiceClient interface {
 	Create(ctx context.Context, in *Category, opts ...grpc.CallOption) (*Category, error)
-	Get(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Category, error)
+	Get(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*Category, error)
 }
 
 type categoryServiceClient struct {
@@ -39,7 +39,7 @@ func (c *categoryServiceClient) Create(ctx context.Context, in *Category, opts .
 	return out, nil
 }
 
-func (c *categoryServiceClient) Get(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Category, error) {
+func (c *categoryServiceClient) Get(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*Category, error) {
 	out := new(Category)
 	err := c.cc.Invoke(ctx, "/genproto.CategoryService/Get", in, out, opts...)
 	if err != nil {
@@ -53,7 +53,7 @@ func (c *categoryServiceClient) Get(ctx context.Context, in *IdRequest, opts ...
 // for forward compatibility
 type CategoryServiceServer interface {
 	Create(context.Context, *Category) (*Category, error)
-	Get(context.Context, *IdRequest) (*Category, error)
+	Get(context.Context, *GetCategoryRequest) (*Category, error)
 	mustEmbedUnimplementedCategoryServiceServer()
 }
 
@@ -64,7 +64,7 @@ type UnimplementedCategoryServiceServer struct {
 func (UnimplementedCategoryServiceServer) Create(context.Context, *Category) (*Category, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedCategoryServiceServer) Get(context.Context, *IdRequest) (*Category, error) {
+func (UnimplementedCategoryServiceServer) Get(context.Context, *GetCategoryRequest) (*Category, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedCategoryServiceServer) mustEmbedUnimplementedCategoryServiceServer() {}
@@ -99,7 +99,7 @@ func _CategoryService_Create_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _CategoryService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IdRequest)
+	in := new(GetCategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func _CategoryService_Get_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/genproto.CategoryService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).Get(ctx, req.(*IdRequest))
+		return srv.(CategoryServiceServer).Get(ctx, req.(*GetCategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

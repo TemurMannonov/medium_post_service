@@ -30,6 +30,7 @@ type GetAllPostsResult struct {
 
 type PostStorageI interface {
 	Create(u *Post) (*Post, error)
+	Update(u *Post) (*Post, error)
 	Get(id int64) (*Post, error)
 	GetAll(params *GetAllPostsParams) (*GetAllPostsResult, error)
 }

@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"time"
 
 	pb "github.com/TemurMannonov/medium_post_service/genproto/post_service"
@@ -33,6 +35,24 @@ func (s *PostService) Create(ctx context.Context, req *pb.Post) (*pb.Post, error
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Internal server error: %v", err)
+	}
+	return parsePostModel(user), nil
+}
+
+func (s *PostService) Update(ctx context.Context, req *pb.Post) (*pb.Post, error) {
+	user, err := s.storage.Post().Update(&repo.Post{
+		ID:          req.Id,
+		Title:       req.Title,
+		Description: req.Description,
+		ImageUrl:    req.ImageUrl,
+		UserID:      req.UserId,
+		CategoryID:  req.CategoryId,
+	})
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, status.Errorf(codes.NotFound, err.Error())
+		}
+		return nil, status.Errorf(codes.Internal, "internal error: %v", err)
 	}
 	return parsePostModel(user), nil
 }
